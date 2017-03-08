@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  <title>Questions Icebreaker</title>
+
+  <style>
+html {
+  height: 100vh;
+}
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-family: georgia, arial;
+  height: 100vh;
+  justify-content: center;
+  margin: 0;
+  padding-left: 7vw;
+  width: 80vw;
+}
+#question-widget {
+  font-size: 4em;
+}
+  </style>
+
+  <meta content="Un Icebreaker qui vous pose des questions" name="description" />
+  <meta content="scrum retrospective icebreaker" name="keywords" />
+</head>
+
+<body>
+  <template class="question">
+    Si quelqu'un faisait un film biographique sur ta vie, quel acteur ou quelle actrice jouerait ton rôle ?
+  </template>
+
+  <template class="question">
+    Tu viens de réaliser un film qui atteint des sommets au <i>box office</i>. Comment parviendras-tu à éviter que le succès te monte à la tête ?
+  </template>
+
+  <template class="question">
+    Si tu pouvais être un de tes collègues pendant un jour, qui serais-tu ? Pourquoi ?
+  </template>
+
+  <template class="question">
+    Si tu étais un personnage de la série <u>Les Simpson</u>, qui serais-tu ? Pourquoi ?
+  </template>
+
+  <template class="question">
+    Si tu étais un personnage de la série <u>Game of Thrones</u>, qui serais-tu ? Pourquoi ?
+  </template>
+
+  <template class="question">
+    Si tu pouvais être une des personnes que tu suis sur Twitter, qui serais-tu ? Pourquoi ?
+  </template>
+
+  <template class="question">
+    Si tu étais un moyen de transport, que serais-tu ? Pourquoi ?
+  </template>
+
+  <p id="question-widget"></p>
+
+  <script>
+(function () {
+  'use strict';
+
+  const KEYCODE_ENTER = 13;
+  const KEYCODE_SPACE = 32;
+  const KEYCODE_BACKSPACE = 8;
+
+  const KEYCODE_LEFT_ARROW = 37;
+  const KEYCODE_UP_ARROW = 38;
+  const KEYCODE_RIGHT_ARROW = 39;
+  const KEYCODE_DOWN_ARROW = 40;
+
+  const NEXT_KEYCODES = [KEYCODE_ENTER, KEYCODE_SPACE, KEYCODE_RIGHT_ARROW, KEYCODE_DOWN_ARROW];
+  const PREV_KEYCODES = [KEYCODE_BACKSPACE, KEYCODE_LEFT_ARROW, KEYCODE_UP_ARROW];
+
+  class QuestionWidget {
+    constructor(container, questionsTemplates) {
+      this.container = container;
+      this.templates = Array.from(questionsTemplates);
+      this.currentQuestionIndex = 0;
+      this.shuffleQuestions();
+      this.updateQuestion();
+    }
+
+    next() {
+      this.currentQuestionIndex = (this.currentQuestionIndex + 1) % this.templates.length;
+      this.updateQuestion();
+    }
+
+    previous() {
+      --this.currentQuestionIndex;
+
+      if (this.currentQuestionIndex < 0) {
+        this.currentQuestionIndex = this.templates.length - 1;
+      }
+      
+      this.updateQuestion();
+    }
+
+    updateQuestion() {
+      this.container.innerHTML = '';
+
+      const template = this.templates[this.currentQuestionIndex];
+      if (!template) {
+        return;
+      }
+
+      this.container.appendChild(document.importNode(template.content, true));
+    }
+
+    shuffleQuestions() {
+      const array = this.templates;
+      let counter = array.length;
+
+      // While there are elements in the array
+      while (counter > 0) {
+          const index = Math.floor(Math.random() * counter); // Pick a random index
+
+          --counter;
+
+          // And swap the last element with it
+          const temp = array[counter];
+          array[counter] = array[index];
+          array[index] = temp;
+      }
+    }
+  }
+
+  const widgetContainer = document.getElementById('question-widget');
+  const questionsTemplates = document.querySelectorAll('.question');
+  const widget = new QuestionWidget(widgetContainer, questionsTemplates);
+
+  window.onkeyup = function (event) {
+    if (NEXT_KEYCODES.includes(event.keyCode)) {
+      widget.next();
+    }
+
+    if (PREV_KEYCODES.includes(event.keyCode)) {
+      widget.previous();
+    }
+  };
+
+  window.onclick = widget.next.bind(widget);
+}());
+  </script>
+</body>
+</html>
