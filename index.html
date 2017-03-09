@@ -57,7 +57,10 @@ body {
     Si tu étais un moyen de transport, que serais-tu ? Pourquoi ?
   </template>
 
-  <p id="question-widget"></p>
+  <main id="question-widget">
+    <p>Cliquez pour commencer</p>
+    <div style="text-align: center">ᕕ( ᐛ )ᕗ</div>
+  </main>
 
   <script>
 (function () {
@@ -79,24 +82,37 @@ body {
     constructor(container, questionsTemplates) {
       this.container = container;
       this.templates = Array.from(questionsTemplates);
+      this.firstMove = true;
       this.currentQuestionIndex = 0;
       this.shuffleQuestions();
-      this.updateQuestion();
     }
 
     next() {
-      this.currentQuestionIndex = (this.currentQuestionIndex + 1) % this.templates.length;
+      this.updateCurrentQuestionIndex('next');
       this.updateQuestion();
     }
 
     previous() {
-      --this.currentQuestionIndex;
-
-      if (this.currentQuestionIndex < 0) {
-        this.currentQuestionIndex = this.templates.length - 1;
-      }
-      
+      this.updateCurrentQuestionIndex('previous');
       this.updateQuestion();
+    }
+
+    updateCurrentQuestionIndex(action) {
+      if (this.firstMove) {
+        this.firstMove = false;
+      } else if(action === 'previous') {
+        --this.currentQuestionIndex;
+
+        if (this.currentQuestionIndex < 0) {
+          this.currentQuestionIndex = this.templates.length - 1;
+        }
+      } else {
+        ++this.currentQuestionIndex;
+
+        if (this.currentQuestionIndex >= this.templates.length) {
+          this.currentQuestionIndex = 0;
+        }
+      }
     }
 
     updateQuestion() {
